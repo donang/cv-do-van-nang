@@ -17,7 +17,7 @@ body{
 
 /* PAGE A4 */
 .page{
-    width:21cm;height:29.7cm;
+    width:21cm;min-height:29.7cm;height:auto;
     background:var(--bg);
     display:flex;flex-direction:column;
     overflow:hidden;position:relative;
