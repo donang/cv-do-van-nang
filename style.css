@@ -294,4 +294,53 @@ body{
     100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}
 }
 
+/* RESPONSIVE MOBILE */
+@media screen and (max-width: 820px) {
+    body { padding: 0; }
+    .page {
+        width: 100%;
+        height: auto;
+        min-height: 100vh;
+        box-shadow: none;
+    }
+    .header {
+        flex-direction: column;
+        text-align: center;
+        padding: 25px 15px;
+    }
+    .tags {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .body {
+        flex-direction: column;
+        overflow: visible;
+    }
+    .left {
+        width: 100%;
+        min-width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(139,92,246,.12);
+        padding: 20px 15px;
+    }
+    .right { padding: 20px 15px; }
+    .tl-l {
+        width: 85px;
+        min-width: 85px;
+        padding-right: 8px;
+    }
+    .tl-d {
+        font-size: 12px;
+        white-space: normal;
+    }
+    .tl-r { padding-left: 10px; }
+    .dock { flex-wrap: wrap; }
+    .foot-editorial {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    .ed-val { justify-content: center; }
+}
+
 @media print{body{background:none;padding:0}.page{box-shadow:none}}
