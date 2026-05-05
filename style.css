@@ -10,8 +10,11 @@
 body{
     font-family:'Montserrat',sans-serif;
     background:#06060f;color:var(--w);
-    display:flex;justify-content:center;
-    min-height:100vh;padding:10px;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start; /* Prevent stretching to 100vh */
+    min-height:100vh;
+    padding:20px 10px;
     -webkit-font-smoothing:antialiased;
     -webkit-text-size-adjust:100%;
     text-size-adjust:100%;
@@ -19,7 +22,9 @@ body{
 
 /* PAGE A4 */
 .page{
-    width:21cm;height:29.7cm;
+    width:21cm;
+    min-height:29.7cm;
+    height:auto; /* Allow expanding if needed, won't stretch to 100vh anymore */
     background:var(--bg);
     display:flex;flex-direction:column;
     overflow:hidden;position:relative;
