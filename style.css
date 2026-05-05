@@ -302,7 +302,10 @@ body{
         height: auto;
         min-height: 100vh;
         box-shadow: none;
+        overflow: visible;
     }
+    .name { font-size: 36px; }
+    .role { font-size: 12px; letter-spacing: 3px; }
     .header {
         flex-direction: column;
         text-align: center;
@@ -323,6 +326,10 @@ body{
         border-bottom: 1px solid rgba(139,92,246,.12);
         padding: 20px 15px;
     }
+    .ci-tx strong {
+        white-space: normal;
+        word-break: break-word;
+    }
     .right { padding: 20px 15px; }
     .tl-l {
         width: 85px;
@@ -334,7 +341,7 @@ body{
         white-space: normal;
     }
     .tl-r { padding-left: 10px; }
-    .dock { flex-wrap: wrap; }
+    .dock { flex-wrap: wrap; justify-content: center; }
     .foot-editorial {
         flex-direction: column;
         gap: 15px;
