@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CV Admin</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--pk:#ff2d78;--bg:#0a0a14;--card:#12121f;--bdr:rgba(255,45,120,.12)}
+body{background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:#e0e0e0;overflow:hidden;height:100vh}
+
+/* === DESKTOP LAYOUT === */
+.app{display:flex;height:100vh}
+.panel{width:320px;background:var(--card);padding:20px;overflow-y:auto;border-right:1px solid var(--bdr);flex-shrink:0}
+.right-side{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.toolbar{height:48px;background:var(--card);display:flex;align-items:center;padding:0 20px;gap:10px;border-bottom:1px solid var(--bdr)}
+.toolbar .t{font-size:13px;color:#666;flex:1}.toolbar b{color:var(--pk)}
+.preview{flex:1;overflow:hidden;display:flex;justify-content:center;align-items:flex-start;padding:16px;background:radial-gradient(ellipse,#151525,var(--bg))}
+
+/* === FORM === */
+.panel h2{font-size:15px;color:var(--pk);margin:0 0 14px;letter-spacing:2px}
+.panel h3{font-size:10px;color:var(--pk);margin:18px 0 6px;letter-spacing:2px;padding-bottom:4px;border-bottom:1px solid var(--bdr)}
+.f{margin-bottom:7px}
+.f label{display:block;font-size:10px;color:#666;margin-bottom:2px;letter-spacing:.5px}
+.f input,.f textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#fff;padding:7px 10px;border-radius:6px;font-size:12px;font-family:inherit;transition:border .2s}
+.f textarea{resize:vertical;min-height:44px}
+.f input:focus,.f textarea:focus{border-color:var(--pk);outline:none;box-shadow:0 0 8px rgba(255,45,120,.12)}
+
+/* === BUTTONS === */
+.btn{padding:8px 18px;border:none;border-radius:6px;font-size:12px;cursor:pointer;font-weight:600}
+.btn-go{background:linear-gradient(135deg,#ff2d78,#8b5cf6);color:#fff;box-shadow:0 2px 12px rgba(255,45,120,.3)}
+.btn-go:hover{opacity:.9}
+.btn-rs{background:rgba(255,255,255,.06);color:#aaa;border:1px solid rgba(255,255,255,.1)}
+.btn-dl{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 2px 12px rgba(34,197,94,.3)}
+.btn-dl:hover{opacity:.9}
+.btn-push{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff;box-shadow:0 2px 12px rgba(59,130,246,.3)}
+.btn-push:hover{opacity:.9}
+.lang-tog{display:flex;border-radius:6px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+.lang-tog button{padding:6px 14px;border:none;font-size:11px;font-weight:700;cursor:pointer;background:transparent;color:#666;font-family:inherit;transition:all .2s}
+.lang-tog button.on{background:linear-gradient(135deg,#ff2d78,#8b5cf6);color:#fff}
+
+/* === CV FRAME === */
+.cv-wrap{width:814px;transform-origin:top center}
+.cv-frame{width:814px;height:1160px;border:none;display:block;overflow:hidden}
+
+/* === TOAST === */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:#22c55e;color:#fff;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:600;z-index:200;transition:transform .3s}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.warn{background:linear-gradient(135deg,#f59e0b,#d97706)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;justify-content:center;align-items:center}
+.modal-overlay.show{display:flex}
+.modal-box{background:#1a1a2e;border:1px solid var(--bdr);border-radius:12px;padding:24px;max-width:320px;width:90%;text-align:center}
+.modal-box p{font-size:14px;color:#ccc;margin-bottom:16px;line-height:1.5}
+.modal-box button{padding:10px 28px;border:none;border-radius:8px;background:linear-gradient(135deg,#ff2d78,#8b5cf6);color:#fff;font-size:13px;font-weight:600;cursor:pointer}
+
+/* === MOBILE === */
+.mob-bar{display:none;height:56px;background:rgba(18,18,31,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,45,120,.08);position:sticky;top:0;z-index:50;padding:0 4px;gap:4px}
+.mob-bar button{flex:1;border:none;background:none;color:#555;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;height:100%;letter-spacing:.5px;transition:color .25s;position:relative}
+.mob-bar button.on{color:#fff}
+.mob-bar button.on::after{content:'';position:absolute;bottom:0;left:16%;width:68%;height:3px;background:linear-gradient(90deg,#ff2d78,#8b5cf6);border-radius:3px 3px 0 0;animation:slideIn .3s ease}
+@keyframes slideIn{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.fab{display:none;position:fixed;bottom:24px;right:20px;z-index:99;padding:14px 28px;border:none;border-radius:16px;background:linear-gradient(135deg,#ff2d78,#8b5cf6);color:#fff;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(255,45,120,.35),0 0 40px rgba(139,92,246,.15);transition:transform .2s}
+.fab:active{transform:scale(.95)}
+@keyframes fabPulse{0%,100%{box-shadow:0 4px 24px rgba(255,45,120,.35)}50%{box-shadow:0 4px 32px rgba(255,45,120,.5),0 0 50px rgba(139,92,246,.2)}}
+
+@media(max-width:900px){
+  body{overflow:auto;height:auto}
+  .app{flex-direction:column;height:auto;min-height:100vh}
+  .panel{width:100%;border-right:none;border-bottom:none;padding:20px 16px}
+  .panel h2{text-align:center;font-size:16px}
+  .right-side{min-height:auto}
+  .toolbar{display:none}
+  .mob-bar{display:flex}
+  .fab{display:block;animation:fabPulse 3s infinite}
+  .preview{padding:8px;overflow-x:hidden;display:block}
+  .cv-wrap{transform-origin:top left}
+  .panel.hide{display:none}
+  .right-side.hide{display:none}
+  .f input,.f textarea{padding:10px 12px;font-size:13px;border-radius:8px;background:rgba(255,255,255,.06)}
+  .panel h3{font-size:11px;margin:16px 0 8px;padding-bottom:6px}
+}
+</style>
+</head>
+<body>
+
+<div class="mob-bar">
+  <button class="on" onclick="mobTab('edit',this)">✏️ Chỉnh sửa</button>
+  <button onclick="mobTab('preview',this)">👁️ Xem trước</button>
+</div>
+
+<div class="app">
+<div class="panel" id="panelEl">
+<h2>✏️ CV ADMIN</h2>
+<div style="display:flex;justify-content:center;margin-bottom:14px">
+<div class="lang-tog">
+  <button class="on" onclick="switchLang('vi',this)">🇻🇳 Tiếng Việt</button>
+  <button onclick="switchLang('en',this)">🇬🇧 English</button>
+</div>
+</div>
+
+<h3>👤 THÔNG TIN</h3>
+<div class="f"><label>Họ tên (dòng 1)</label><input id="fname" value="ĐỖ VĂN"></div>
+<div class="f"><label>Họ tên (dòng 2)</label><input id="lname" value="NĂNG"></div>
+<div class="f"><label>Chức danh</label><input id="role" value="GRAPHIC DESIGNER"></div>
+<div class="f"><label>Tag 1</label><input id="tag1" value="SÁNG TẠO"></div>
+<div class="f"><label>Tag 2</label><input id="tag2" value="TỐI ƯU HIỆU QUẢ"></div>
+<div class="f"><label>Tag 3</label><input id="tag3" value="ĐỒNG BỘ THƯƠNG HIỆU"></div>
+
+<h3>📞 LIÊN HỆ</h3>
+<div class="f"><label>Điện thoại</label><input id="phone" value="0969 000 853"></div>
+<div class="f"><label>Địa chỉ</label><input id="address" value="Hà Nội, Việt Nam"></div>
+<div class="f"><label>Email</label><input id="email" value="donang198@gmail.com"></div>
+<div class="f"><label>Portfolio</label><input id="portfolio" value="https://donang.github.io/portfolio-do-van-nang/"></div>
+
+<h3>📝 GIỚI THIỆU</h3>
+<div class="f"><label>Về tôi</label><textarea id="about" rows="3">Graphic Designer chuyên thiết kế Social Media &amp; Ấn phẩm Quảng cáo. Kết hợp thẩm mỹ và tư duy chiến lược nhằm bứt phá CTR, tối ưu tương tác cho thương hiệu.</textarea></div>
+
+<h3>💼 KINH NGHIỆM 1</h3>
+<div class="f"><label>Thời gian</label><input id="e1t" value="2024 - HIỆN TẠI"></div>
+<div class="f"><label>Vị trí</label><input id="e1j" value="CREATIVE DESIGNER"></div>
+<div class="f"><label>Công ty</label><textarea id="e1c" rows="2">Công Ty CP Truyền Thông &amp; Giải Trí
+Red One Media (HG Group)</textarea></div>
+<div class="f"><label>Mô tả (mỗi dòng = 1 bullet)</label><textarea id="e1d" rows="4">Thiết kế thumbnail YouTube tối ưu CTR.
+Xây dựng concept theo nội dung âm nhạc.
+Chỉnh sửa footage và phối hợp content.
+Đảm bảo nhận diện thương hiệu.</textarea></div>
+
+<h3>💼 KINH NGHIỆM 2</h3>
+<div class="f"><label>Thời gian</label><input id="e2t" value="2023 - 2024"></div>
+<div class="f"><label>Vị trí</label><input id="e2j" value="FREELANCER"></div>
+<div class="f"><label>Công ty</label><input id="e2c" value="Freelancer tự do"></div>
+<div class="f"><label>Mô tả</label><textarea id="e2d" rows="2">Thiết kế ấn phẩm social.
+Xây dựng concept và hỗ trợ thương hiệu cho nhiều khách hàng đa lĩnh vực.</textarea></div>
+
+<h3>💼 KINH NGHIỆM 3</h3>
+<div class="f"><label>Thời gian</label><input id="e3t" value="2023 - 2023"></div>
+<div class="f"><label>Vị trí</label><input id="e3j" value="GRAPHIC DESIGNER"></div>
+<div class="f"><label>Công ty</label><input id="e3c" value="Tổ chức Giáo dục FPT"></div>
+<div class="f"><label>Mô tả</label><textarea id="e3d" rows="3">Thiết kế ấn phẩm social.
+Xây dựng concept theo chiến dịch tuyển sinh.
+Phối hợp content đảm bảo đồng bộ thương hiệu.</textarea></div>
+
+<h3>🎓 HỌC VẤN</h3>
+<div class="f"><label>Thời gian</label><input id="edt" value="2019 - 2022"></div>
+<div class="f"><label>Ngành</label><input id="edm" value="NGHỆ THUẬT ĐA PHƯƠNG TIỆN"></div>
+<div class="f"><label>Trường</label><input id="eds" value="Cao đẳng FPT Polytechnic"></div>
+
+<h3>📊 FOOTER</h3>
+<div class="f"><label>Tình trạng</label><input id="fs" value="SẴN SÀNG NHẬN VIỆC"></div>
+<div class="f"><label>Kinh nghiệm</label><input id="fe" value="GẦN 4 NĂM"></div>
+<div class="f"><label>Chuyên môn</label><input id="fc" value="SOCIAL MEDIA &amp; BRANDING"></div>
+
+<h3>⚙️ GITHUB</h3>
+<div class="f"><label>Personal Access Token</label><input id="ghToken" type="password" placeholder="ghp_xxxx..."></div>
+<div class="f"><label>Repository (owner/repo)</label><input id="ghRepo" value="donang/cv-do-van-nang"></div>
+<div style="font-size:10px;color:#555;margin-top:4px">Token lưu trên browser, không gửi đi đâu</div>
+</div>
+
+<div class="right-side" id="rightEl">
+<div class="toolbar">
+  <div class="t">Admin — <b id="cvTitle">CV Tiếng Việt</b></div>
+  <div class="lang-tog">
+    <button class="on" onclick="switchLang('vi',this)">🇻🇳 VI</button>
+    <button onclick="switchLang('en',this)">🇬🇧 EN</button>
+  </div>
+  <button class="btn btn-rs" onclick="location.reload()">↺ Reset</button>
+  <button class="btn btn-go" onclick="apply()">✓ Áp dụng</button>
+  <button class="btn btn-dl" onclick="exportHTML()">📥 Xuất</button>
+  <button class="btn btn-push" onclick="pushToGitHub()">🚀 Push GitHub</button>
+</div>
+<div class="preview" id="pv">
+  <div class="cv-wrap" id="cvWrap">
+    <iframe class="cv-frame" id="fr" src="../index.html" scrolling="no"></iframe>
+  </div>
+</div>
+</div>
+</div>
+
+<button class="fab" onclick="apply()">✓ Áp dụng</button>
+<button class="fab" style="bottom:80px;background:linear-gradient(135deg,#22c55e,#16a34a);font-size:13px;padding:12px 20px" onclick="exportHTML()">📥 Xuất</button>
+<button class="fab" style="bottom:136px;background:linear-gradient(135deg,#3b82f6,#6366f1);font-size:13px;padding:12px 20px" onclick="pushToGitHub()">🚀 Push</button>
+<div class="toast" id="toast">✅ Đã cập nhật!</div>
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <p id="modalMsg">⚠️ Vui lòng chuyển sang tab "Xem trước" trước!</p>
+    <button onclick="document.getElementById('modal').classList.remove('show')">OK</button>
+  </div>
+</div>
+
+<script>
+var fr=document.getElementById('fr');
+var currentLang='vi';
+var langData={
+  vi:{src:'../index.html',title:'CV Tiếng Việt',
+    fname:'ĐỖ VĂN',lname:'NĂNG',role:'GRAPHIC DESIGNER',
+    tag1:'SÁNG TẠO',tag2:'TỐI ƯU HIỆU QUẢ',tag3:'ĐỒNG BỘ THƯƠNG HIỆU',
+    phone:'0969 000 853',address:'Hà Nội, Việt Nam',email:'donang198@gmail.com',
+    portfolio:'https://donang.github.io/portfolio-do-van-nang/',
+    about:'Graphic Designer chuyên thiết kế Social Media & Ấn phẩm Quảng cáo. Kết hợp thẩm mỹ và tư duy chiến lược nhằm bứt phá CTR, tối ưu tương tác cho thương hiệu.',
+    e1t:'2024 - HIỆN TẠI',e1j:'CREATIVE DESIGNER',e1c:'Công Ty CP Truyền Thông & Giải Trí\nRed One Media (HG Group)',
+    e1d:'Thiết kế thumbnail YouTube tối ưu CTR.\nXây dựng concept theo nội dung âm nhạc.\nChỉnh sửa footage và phối hợp content.\nĐảm bảo nhận diện thương hiệu.',
+    e2t:'2023 - 2024',e2j:'FREELANCER',e2c:'Freelancer tự do',
+    e2d:'Thiết kế ấn phẩm social.\nXây dựng concept và hỗ trợ thương hiệu cho nhiều khách hàng đa lĩnh vực.',
+    e3t:'2023 - 2023',e3j:'GRAPHIC DESIGNER',e3c:'Tổ chức Giáo dục FPT',
+    e3d:'Thiết kế ấn phẩm social.\nXây dựng concept theo chiến dịch tuyển sinh.\nPhối hợp content đảm bảo đồng bộ thương hiệu.',
+    edt:'2019 - 2022',edm:'NGHỆ THUẬT ĐA PHƯƠNG TIỆN',eds:'Cao đẳng FPT Polytechnic',
+    fs:'SẴN SÀNG NHẬN VIỆC',fe:'GẦN 4 NĂM',fc:'SOCIAL MEDIA & BRANDING'},
+  en:{src:'../CV-English/index.html',title:'CV English',
+    fname:'DO VAN',lname:'NANG',role:'GRAPHIC DESIGNER',
+    tag1:'CREATIVE',tag2:'PERFORMANCE-DRIVEN',tag3:'BRAND CONSISTENCY',
+    phone:'0969 000 853',address:'Hanoi, Vietnam',email:'donang198@gmail.com',
+    portfolio:'https://donang.github.io/portfolio-do-van-nang/',
+    about:'Graphic Designer specializing in Social Media & Advertising Collateral. Combining aesthetics with strategic thinking to boost CTR and optimize brand engagement.',
+    e1t:'2024 - PRESENT',e1j:'CREATIVE DESIGNER',e1c:'Red One Media JSC\n(HG Group)',
+    e1d:'Designed YouTube thumbnails optimized for CTR.\nDeveloped concepts aligned with music content.\nEdited footage and coordinated content production.\nEnsured brand identity consistency.',
+    e2t:'2023 - 2024',e2j:'FREELANCER',e2c:'Freelance',
+    e2d:'Designed social media collateral.\nDeveloped concepts and supported branding for multi-industry clients.',
+    e3t:'2023 - 2023',e3j:'GRAPHIC DESIGNER',e3c:'FPT Education',
+    e3d:'Designed social media collateral.\nDeveloped concepts for enrollment campaigns.\nCoordinated content to ensure brand consistency.',
+    edt:'2019 - 2022',edm:'MULTIMEDIA ARTS',eds:'FPT Polytechnic College',
+    fs:'AVAILABLE',fe:'3+ YEARS',fc:'SOCIAL MEDIA & BRANDING'}
+};
+
+function switchLang(lang,btn){
+  currentLang=lang;
+  var data=langData[lang];
+  document.querySelectorAll('.lang-tog button').forEach(function(b){b.classList.remove('on')});
+  document.querySelectorAll('.lang-tog').forEach(function(tog){
+    tog.querySelectorAll('button').forEach(function(b){
+      var t=b.textContent;
+      if(lang==='vi'&&(t.indexOf('VI')>-1||t.indexOf('Việt')>-1))b.classList.add('on');
+      if(lang==='en'&&(t.indexOf('EN')>-1||t.indexOf('English')>-1))b.classList.add('on');
+    });
+  });
+  var ct=document.getElementById('cvTitle');if(ct)ct.textContent=data.title;
+  var fields=['fname','lname','role','tag1','tag2','tag3','phone','address','email','portfolio','about','e1t','e1j','e1c','e1d','e2t','e2j','e2c','e2d','e3t','e3j','e3c','e3d','edt','edm','eds','fs','fe','fc'];
+  fields.forEach(function(f){var el=document.getElementById(f);if(el)el.value=data[f]||'';});
+  fr.src=data.src;
+  fr.onload=function(){fit();updateCV();};
+}
+function fit(){
+  var pv=document.getElementById('pv');
+  var wrap=document.getElementById('cvWrap');
+  if(!pv||!wrap)return;
+  var pw=pv.clientWidth-32;
+  var ph=pv.clientHeight||window.innerHeight-48;
+  ph=ph-32;
+  var s=Math.min(pw/814,ph/1160,1);
+  if(s<0.15)s=pw/814;
+  wrap.style.transform='scale('+s+')';
+  wrap.style.width='814px';
+  wrap.style.height='1160px';
+  wrap.style.marginBottom=(1160*(s-1))+'px';
+  wrap.style.marginRight=(814*(s-1))+'px';
+}
+window.addEventListener('resize',fit);
+fr.addEventListener('load',fit);
+
+function updateCV(){
+  var d;
+  try{d=fr.contentDocument||fr.contentWindow.document}catch(e){}
+  if(!d||!d.querySelector('.nw'))return false;
+  var $=function(id){return document.getElementById(id).value};
+
+  d.querySelector('.nw').textContent=$('fname');
+  d.querySelector('.ng').textContent=$('lname');
+  d.querySelector('.role').textContent=$('role');
+
+  var tags=d.querySelectorAll('.tag');
+  ['tag1','tag2','tag3'].forEach(function(id,i){
+    if(tags[i])tags[i].innerHTML='<span class="t-icon">/</span> '+$(id);
+  });
+
+  var ci=d.querySelectorAll('.ci-tx strong');
+  if(ci[0])ci[0].textContent=$('phone');
+  if(ci[1])ci[1].textContent=$('address');
+  if(ci[2])ci[2].textContent=$('email');
+  var lk=d.querySelector('.clink');
+  if(lk){lk.href=$('portfolio');lk.textContent=$('portfolio').replace('https://','');}
+
+  d.querySelector('.atxt').textContent=$('about');
+
+  var tl=d.querySelectorAll('.tl-i');
+  function setE(i,t,j,c,dd){
+    if(!tl[i])return;
+    tl[i].querySelector('.tl-d').textContent=$(t);
+    tl[i].querySelector('.jt').textContent=$(j);
+    tl[i].querySelector('.jc').innerHTML=$(c).replace(/\n/g,'<br>');
+    var ul=tl[i].querySelector('.jd');
+    if(ul){var ls=$(dd).trim().split('\n').filter(function(l){return l});
+    ul.innerHTML=ls.map(function(l){return'<li>'+l+'</li>'}).join('');}
+  }
+  setE(0,'e1t','e1j','e1c','e1d');
+  setE(1,'e2t','e2j','e2c','e2d');
+  setE(2,'e3t','e3j','e3c','e3d');
+
+  if(tl[3]){
+    tl[3].querySelector('.tl-d').textContent=$('edt');
+    tl[3].querySelector('.jt').textContent=$('edm');
+    tl[3].querySelector('.jc').textContent=$('eds');
+  }
+
+  var ev=d.querySelectorAll('.ed-val');
+  if(ev[0])ev[0].innerHTML='<span class="pulse-dot"></span> '+$('fs');
+  if(ev[1])ev[1].textContent=$('fe');
+  if(ev[2])ev[2].textContent=$('fc');
+  return true;
+}
+
+function apply(){
+  if(!updateCV()){
+    var md=document.getElementById('modal');
+    document.getElementById('modalMsg').textContent='⚠️ Vui lòng chuyển sang tab "Xem trước" trước!';
+    md.classList.add('show');
+    return;
+  }
+  var tt=document.getElementById('toast');
+  tt.classList.add('show');setTimeout(function(){tt.classList.remove('show')},1800);
+}
+
+// Live update khi gõ
+document.querySelectorAll('.panel input,.panel textarea').forEach(function(el){
+  el.addEventListener('input',function(){updateCV()});
+});
+
+function mobTab(v,btn){
+  document.querySelectorAll('.mob-bar button').forEach(function(b){b.classList.remove('on')});
+  btn.classList.add('on');
+  var p=document.getElementById('panelEl'),r=document.getElementById('rightEl');
+  if(v==='edit'){p.classList.remove('hide');r.classList.add('hide');}
+  else{p.classList.add('hide');r.classList.remove('hide');setTimeout(fit,100);}
+}
+
+function exportHTML(){
+  updateCV();
+  var d;
+  try{d=fr.contentDocument||fr.contentWindow.document}catch(e){}
+  if(!d){
+    var md=document.getElementById('modal');
+    document.getElementById('modalMsg').textContent='⚠️ Không thể xuất — CV chưa load!';
+    md.classList.add('show');
+    return;
+  }
+  var html='<!DOCTYPE html>\n'+d.documentElement.outerHTML;
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  var fname=currentLang==='en'?'CV-English-index.html':'index.html';
+  a.download=fname;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  var label=currentLang==='en'?'CV English':'CV Tiếng Việt';
+  var tt=document.getElementById('toast');
+  tt.textContent='📥 Đã xuất '+label+'!';
+  tt.classList.add('show');
+  setTimeout(function(){tt.classList.remove('show');tt.textContent='✅ Đã cập nhật!'},2500);
+}
+
+async function pushToGitHub(){
+  updateCV();
+  var d;
+  try{d=fr.contentDocument||fr.contentWindow.document}catch(e){}
+  if(!d) return alert("CV chưa load!");
+  
+  var token = document.getElementById('ghToken').value.trim();
+  var repo = document.getElementById('ghRepo').value.trim();
+  
+  if(!token || !repo) {
+    alert("⚠️ Vui lòng nhập GitHub Token và Repository trước khi Push!");
+    return;
+  }
+  
+  // Lưu token vào localStorage
+  localStorage.setItem('ghToken', token);
+  localStorage.setItem('ghRepo', repo);
+  
+  var path = currentLang === 'en' ? 'CV-English/index.html' : 'index.html';
+  var html = '<!DOCTYPE html>\n' + d.documentElement.outerHTML;
+  // B64 encode unicode safe
+  var contentBase64 = btoa(unescape(encodeURIComponent(html)));
+  
+  var tt=document.getElementById('toast');
+  tt.textContent='⏳ Đang push lên GitHub...';
+  tt.classList.add('show');
+  
+  try {
+    var url = 'https://api.github.com/repos/' + repo + '/contents/' + path;
+    var headers = {
+      'Authorization': 'token ' + token,
+      'Accept': 'application/vnd.github.v3+json'
+    };
+    
+    // Lấy sha của file cũ (để ghi đè)
+    var getRes = await fetch(url, { headers: headers });
+    var sha = '';
+    if(getRes.ok) {
+      var getJson = await getRes.json();
+      sha = getJson.sha;
+    }
+    
+    // Gửi file mới
+    var body = {
+      message: 'Update CV via Admin Panel (' + currentLang.toUpperCase() + ')',
+      content: contentBase64
+    };
+    if(sha) body.sha = sha;
+    
+    var putRes = await fetch(url, {
+      method: 'PUT',
+      headers: headers,
+      body: JSON.stringify(body)
+    });
+    
+    if(!putRes.ok) {
+      var errText = await putRes.text();
+      throw new Error(errText);
+    }
+    
+    tt.textContent='🚀 Push thành công!';
+    setTimeout(function(){tt.classList.remove('show');tt.textContent='✅ Đã cập nhật!'}, 2500);
+    
+  } catch(e) {
+    alert("Lỗi push: " + e.message);
+    tt.classList.remove('show');
+    tt.textContent='✅ Đã cập nhật!';
+  }
+}
+
+// Load cấu hình đã lưu
+window.addEventListener('DOMContentLoaded', function(){
+  var tk = localStorage.getItem('ghToken');
+  var rp = localStorage.getItem('ghRepo');
+  if(tk) document.getElementById('ghToken').value = tk;
+  if(rp) document.getElementById('ghRepo').value = rp;
+});
+</script>
+</body>
+</html>
