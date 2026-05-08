@@ -53,6 +53,13 @@ body{background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:#e0e
 .modal-box p{font-size:14px;color:#ccc;margin-bottom:16px;line-height:1.5}
 .modal-box button{padding:10px 28px;border:none;border-radius:8px;background:linear-gradient(135deg,#ff2d78,#8b5cf6);color:#fff;font-size:13px;font-weight:600;cursor:pointer}
 
+/* === LOGIN OVERLAY === */
+#loginOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#0a0a14;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
+#loginOverlay h2{font-size:24px;margin-bottom:20px;color:var(--pk);letter-spacing:2px}
+#loginOverlay input{padding:14px 20px;font-size:16px;border-radius:12px;border:1px solid rgba(255,45,120,.3);background:#12121f;color:#fff;text-align:center;margin-bottom:20px;width:260px;outline:none}
+#loginOverlay input:focus{border-color:var(--pk);box-shadow:0 0 12px rgba(255,45,120,.2)}
+#loginOverlay button{padding:14px 32px;font-size:15px;font-weight:700;border-radius:12px;border:none;background:linear-gradient(135deg,#ff2d78,#8b5cf6);color:#fff;cursor:pointer;box-shadow:0 4px 20px rgba(255,45,120,.3)}
+
 /* === MOBILE === */
 .mob-bar{display:none;height:56px;background:rgba(18,18,31,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,45,120,.08);position:sticky;top:0;z-index:50;padding:0 4px;gap:4px}
 .mob-bar button{flex:1;border:none;background:none;color:#555;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;height:100%;letter-spacing:.5px;transition:color .25s;position:relative}
@@ -82,6 +89,13 @@ body{background:var(--bg);font-family:'Segoe UI',system-ui,sans-serif;color:#e0e
 </style>
 </head>
 <body>
+
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay">
+  <h2>🔒 ADMIN LOGIN</h2>
+  <input type="password" id="adminPwd" placeholder="Nhập mật khẩu..." onkeypress="if(event.key==='Enter')checkPwd()">
+  <button onclick="checkPwd()">Đăng Nhập</button>
+</div>
 
 <div class="mob-bar">
   <button class="on" onclick="mobTab('edit',this)">✏️ Chỉnh sửa</button>
@@ -151,7 +165,7 @@ Phối hợp content đảm bảo đồng bộ thương hiệu.</textarea></div>
 <div class="f"><label>Chuyên môn</label><input id="fc" value="SOCIAL MEDIA &amp; BRANDING"></div>
 
 <h3>⚙️ GITHUB</h3>
-<div class="f"><label>Personal Access Token</label><input id="ghToken" type="password" placeholder="ghp_xxxx..."></div>
+<div class="f"><label>Personal Access Token</label><input id="ghToken" type="text" placeholder="ghp_xxxx..."></div>
 <div class="f"><label>Repository (owner/repo)</label><input id="ghRepo" value="donang/cv-do-van-nang"></div>
 <div style="font-size:10px;color:#555;margin-top:4px">Token lưu trên browser, không gửi đi đâu</div>
 </div>
@@ -190,6 +204,16 @@ Phối hợp content đảm bảo đồng bộ thương hiệu.</textarea></div>
 <script>
 var fr=document.getElementById('fr');
 var currentLang='vi';
+
+function checkPwd(){
+  var p=document.getElementById('adminPwd').value;
+  if(p==='000853'){
+    document.getElementById('loginOverlay').style.display='none';
+  }else{
+    alert('❌ Sai mật khẩu!');
+  }
+}
+
 var langData={
   vi:{src:'../index.html',title:'CV Tiếng Việt',
     fname:'ĐỖ VĂN',lname:'NĂNG',role:'GRAPHIC DESIGNER',
